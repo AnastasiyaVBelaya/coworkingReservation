@@ -1,4 +1,4 @@
-package repository;
+package repository.memory;
 
 import exception.ReservationNotFoundException;
 import repository.api.IReservationRepository;
@@ -28,7 +28,7 @@ public class InMemoryReservationRepository implements IReservationRepository {
         return reservations.stream()
                 .filter(reservation -> reservation.getId().equals(id))
                 .findFirst()
-                .orElseThrow(() -> new ReservationNotFoundException("Reservation with ID " + id + " not found"));
+                .orElseThrow(() -> new ReservationNotFoundException(id));
     }
 
     @Override

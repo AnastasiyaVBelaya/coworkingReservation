@@ -1,4 +1,4 @@
-package repository;
+package repository.memory;
 
 import exception.WorkspaceNotFoundException;
 import repository.entity.Workspace;
@@ -55,7 +55,7 @@ public class InMemoryWorkspaceRepository implements IWorkspaceRepository {
             updatedWorkspace.setAvailability(workspace.isAvailable());
             return updatedWorkspace;
         }
-        throw new WorkspaceNotFoundException("Workspace with ID " + workspace.getId() + " not found");
+        throw new WorkspaceNotFoundException(workspace.getId());
     }
 
     @Override

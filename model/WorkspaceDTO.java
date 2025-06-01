@@ -1,11 +1,13 @@
 package model;
 
+import java.math.BigDecimal;
+
 public class WorkspaceDTO {
     private WorkspaceType type;
-    private double price;
+    private BigDecimal price;
     private boolean available;
 
-    public WorkspaceDTO(WorkspaceType type, double price, boolean available) {
+    public WorkspaceDTO(WorkspaceType type, BigDecimal price, boolean available) {
         this.type = type;
         this.price = price;
         this.available = available;
@@ -15,7 +17,7 @@ public class WorkspaceDTO {
         return type;
     }
 
-    public double getPrice() {
+    public BigDecimal getPrice() {
         return price;
     }
 
