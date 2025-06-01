@@ -8,7 +8,6 @@ import service.api.IReservationService;
 import service.api.IUserService;
 import service.api.IWorkspaceService;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -38,8 +37,10 @@ public class MenuController {
             System.out.println("1. Admin Login");
             System.out.println("2. User Login");
             System.out.println("3. Exit");
+
             int choice = readIntInRange(3);
             System.out.println();
+
             switch (choice) {
                 case 1, 2 -> login();
                 case 3 -> {
@@ -53,12 +54,16 @@ public class MenuController {
     private void login() {
         System.out.print("Enter your login: ");
         System.out.println();
+
         String login = scanner.nextLine().trim();
+
         try {
             User user = userService.login(new UserDTO(login));
             System.out.println("Welcome, " + login);
             System.out.println();
+
             currentUser = new UserDTO(user.getLogin());
+
             if (user.getRole() == Role.ADMIN) {
                 adminMenu();
             } else {
@@ -79,8 +84,10 @@ public class MenuController {
             System.out.println("4. View all workspaces");
             System.out.println("5. View all reservations");
             System.out.println("6. Back to Main Menu");
+
             int choice = readIntInRange(6);
             System.out.println();
+
             switch (choice) {
                 case 1 -> addWorkspace();
                 case 2 -> removeWorkspace();
@@ -102,8 +109,10 @@ public class MenuController {
             System.out.println("3. View my reservations");
             System.out.println("4. Cancel a reservation");
             System.out.println("5. Back to Main Menu");
+
             int choice = readIntInRange(5);
             System.out.println();
+
             switch (choice) {
                 case 1 -> browseSpaces();
                 case 2 -> makeReservation();
@@ -130,8 +139,16 @@ public class MenuController {
 
     private void addWorkspace() {
         System.out.println("Enter workspace type (OPEN_SPACE, PRIVATE, ROOM): ");
+        System.out.println();
+
         String typeInput = scanner.nextLine().toUpperCase();
-        BigDecimal price = readPrice();
+
+        System.out.println("Enter workspace price: ");
+        System.out.println();
+
+        double price = scanner.nextDouble();
+        scanner.nextLine();
+
         try {
             workspaceService.add(new WorkspaceDTO(WorkspaceType.valueOf(typeInput), price, true));
             System.out.println("Workspace added successfully!");
@@ -144,7 +161,10 @@ public class MenuController {
 
     private void removeWorkspace() {
         System.out.println("Enter workspace ID to remove: ");
+        System.out.println();
+
         String idStr = scanner.nextLine();
+
         try {
             boolean removed = workspaceService.remove(UUID.fromString(idStr));
             if (removed) {
@@ -161,13 +181,25 @@ public class MenuController {
 
     private void updateWorkspace() {
         System.out.println("Enter workspace ID to update: ");
+        System.out.println();
+
         String idStr = scanner.nextLine();
+
         System.out.println("Enter new workspace type (OPEN_SPACE, PRIVATE, ROOM): ");
+        System.out.println();
+
         String typeInput = scanner.nextLine().toUpperCase();
-        BigDecimal newPrice = readPrice();
+
+        System.out.println("Enter new workspace price: ");
+        System.out.println();
+
+        double newPrice = scanner.nextDouble();
+        scanner.nextLine();
+
         try {
             Workspace updated = workspaceService.update(UUID.fromString(idStr),
                     new WorkspaceDTO(WorkspaceType.valueOf(typeInput), newPrice, true));
+
             System.out.println("Workspace updated successfully!");
             System.out.println();
         } catch (IllegalArgumentException e) {
@@ -206,18 +238,26 @@ public class MenuController {
         try {
             System.out.println("Enter workspace ID to reserve: ");
             System.out.println();
+
             UUID workspaceId = UUID.fromString(scanner.nextLine());
+
             System.out.println("Enter date for reservation (yyyy-mm-dd): ");
             System.out.println();
+
             LocalDate date = LocalDate.parse(scanner.nextLine());
+
             System.out.println("Enter start time (HH:mm): ");
             System.out.println();
+
             LocalTime startTime = LocalTime.parse(scanner.nextLine());
+
             System.out.println("Enter end time (HH:mm): ");
             System.out.println();
+
             LocalTime endTime = LocalTime.parse(scanner.nextLine());
-            ReservationDTO reservationDTO =
-                    new ReservationDTO(workspaceId, currentUser.getLogin(), date, startTime, endTime);
+
+            ReservationDTO reservationDTO = new ReservationDTO(workspaceId, currentUser.getLogin(), date, startTime, endTime);
+
             reservationService.add(reservationDTO, currentUser);
             System.out.println("Reservation created successfully!");
             System.out.println();
@@ -241,6 +281,7 @@ public class MenuController {
     private void cancelReservation() {
         System.out.println("Enter reservation ID to cancel: ");
         System.out.println();
+
         try {
             UUID reservationId = UUID.fromString(scanner.nextLine());
             if (reservationService.remove(reservationId)) {
@@ -269,22 +310,6 @@ public class MenuController {
                 }
             } catch (NumberFormatException e) {
                 System.out.println(errorMsg);
-            }
-        }
-    }
-
-    private BigDecimal readPrice() {
-        while (true) {
-            System.out.println("Enter workspace price: ");
-            String input = scanner.nextLine().trim();
-            if (input.isEmpty()) {
-                System.out.println("Price cannot be empty!");
-                continue;
-            }
-            try {
-                return new BigDecimal(input);
-            } catch (NumberFormatException e) {
-                System.out.println("Invalid price format!");
             }
         }
     }

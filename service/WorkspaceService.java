@@ -31,7 +31,7 @@ public class WorkspaceService implements IWorkspaceService {
             throw new IllegalArgumentException("Workspace ID cannot be null!");
         }
         return workspaceRepository.find(id).orElseThrow(() ->
-                new WorkspaceNotFoundException(id));
+                new WorkspaceNotFoundException("Workspace with ID " + id + " not found"));
     }
 
     @Override

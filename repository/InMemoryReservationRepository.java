@@ -1,25 +1,22 @@
-package repository.file;
+package repository;
 
 import exception.ReservationNotFoundException;
 import repository.api.IReservationRepository;
 import repository.entity.Reservation;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class FileReservationRepository extends AbstractFileRepository<Reservation> implements IReservationRepository {
-
-    public FileReservationRepository() {
-        super("data/reservations.ser");
-    }
+public class InMemoryReservationRepository implements IReservationRepository {
+    private final List<Reservation> reservations = new ArrayList<>();
 
     @Override
     public Reservation add(Reservation reservation) {
         if (reservation == null) {
             throw new IllegalArgumentException("Reservation cannot be null!");
         }
-        items.add(reservation);
-        writeToFile();
+        reservations.add(reservation);
         return reservation;
     }
 
@@ -28,10 +25,10 @@ public class FileReservationRepository extends AbstractFileRepository<Reservatio
         if (id == null) {
             throw new IllegalArgumentException("Reservation ID cannot be null!");
         }
-        return items.stream()
+        return reservations.stream()
                 .filter(reservation -> reservation.getId().equals(id))
                 .findFirst()
-                .orElseThrow(() -> new ReservationNotFoundException(id));
+                .orElseThrow(() -> new ReservationNotFoundException("Reservation with ID " + id + " not found"));
     }
 
     @Override
@@ -39,7 +36,7 @@ public class FileReservationRepository extends AbstractFileRepository<Reservatio
         if (login == null || login.isEmpty()) {
             throw new IllegalArgumentException("User login cannot be null or empty!");
         }
-        return items.stream()
+        return reservations.stream()
                 .filter(reservation -> reservation.getUser() != null
                         && login.equals(reservation.getUser().getLogin()))
                 .toList();
@@ -47,16 +44,12 @@ public class FileReservationRepository extends AbstractFileRepository<Reservatio
 
     @Override
     public List<Reservation> findAll() {
-        return List.copyOf(items);
+        return List.copyOf(reservations);
     }
 
     @Override
     public boolean remove(UUID id) {
         Reservation reservation = findById(id);
-        boolean removed = items.remove(reservation);
-        if (removed) {
-            writeToFile();
-        }
-        return removed;
+        return reservations.remove(reservation);
     }
 }

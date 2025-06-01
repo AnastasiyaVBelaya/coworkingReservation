@@ -1,12 +1,10 @@
 package repository.entity;
 
-import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.UUID;
 
-public class Reservation implements Serializable {
-    private static final long serialVersionUID = 1L;
+public class Reservation {
     private final UUID id;
     private final User user;
     private final Workspace workspace;
