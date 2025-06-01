@@ -1,22 +1,25 @@
-package repository;
+package repository.file;
 
 import exception.ReservationNotFoundException;
 import repository.api.IReservationRepository;
 import repository.entity.Reservation;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class InMemoryReservationRepository implements IReservationRepository {
-    private final List<Reservation> reservations = new ArrayList<>();
+public class FileReservationRepository extends AbstractFileRepository<Reservation> implements IReservationRepository {
+
+    public FileReservationRepository() {
+        super("data/reservations.ser");
+    }
 
     @Override
     public Reservation add(Reservation reservation) {
         if (reservation == null) {
             throw new IllegalArgumentException("Reservation cannot be null!");
         }
-        reservations.add(reservation);
+        items.add(reservation);
+        writeToFile();
         return reservation;
     }
 
@@ -25,10 +28,10 @@ public class InMemoryReservationRepository implements IReservationRepository {
         if (id == null) {
             throw new IllegalArgumentException("Reservation ID cannot be null!");
         }
-        return reservations.stream()
+        return items.stream()
                 .filter(reservation -> reservation.getId().equals(id))
                 .findFirst()
-                .orElseThrow(() -> new ReservationNotFoundException("Reservation with ID " + id + " not found"));
+                .orElseThrow(() -> new ReservationNotFoundException(id));
     }
 
     @Override
@@ -36,7 +39,7 @@ public class InMemoryReservationRepository implements IReservationRepository {
         if (login == null || login.isEmpty()) {
             throw new IllegalArgumentException("User login cannot be null or empty!");
         }
-        return reservations.stream()
+        return items.stream()
                 .filter(reservation -> reservation.getUser() != null
                         && login.equals(reservation.getUser().getLogin()))
                 .toList();
@@ -44,12 +47,16 @@ public class InMemoryReservationRepository implements IReservationRepository {
 
     @Override
     public List<Reservation> findAll() {
-        return List.copyOf(reservations);
+        return List.copyOf(items);
     }
 
     @Override
     public boolean remove(UUID id) {
         Reservation reservation = findById(id);
-        return reservations.remove(reservation);
+        boolean removed = items.remove(reservation);
+        if (removed) {
+            writeToFile();
+        }
+        return removed;
     }
 }
