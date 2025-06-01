@@ -1,4 +1,4 @@
-package repository.memory;
+package repository;
 
 import model.Role;
 import repository.api.IUserRepository;

@@ -2,10 +2,7 @@ package repository.entity;
 
 import model.Role;
 
-import java.io.Serializable;
-
-public class User implements Serializable {
-    private static final long serialVersionUID = 1L;
+public class User {
     private final String login;
     private final Role role;
 

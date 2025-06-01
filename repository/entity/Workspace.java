@@ -2,18 +2,15 @@ package repository.entity;
 
 import model.WorkspaceType;
 
-import java.io.Serializable;
-import java.math.BigDecimal;
 import java.util.UUID;
 
-public class Workspace implements Serializable {
-    private static final long serialVersionUID = 1L;
+public class Workspace {
     private final UUID id;
     private WorkspaceType type;
-    private BigDecimal price;
+    private double price;
     private boolean available;
 
-    public Workspace(WorkspaceType type, BigDecimal price, boolean available) {
+    public Workspace(WorkspaceType type, double price, boolean available) {
         this.id = UUID.randomUUID();
         this.type = type;
         this.price = price;
@@ -32,11 +29,11 @@ public class Workspace implements Serializable {
         this.type = type;
     }
 
-    public BigDecimal getPrice() {
+    public double getPrice() {
         return price;
     }
 
-    public void setPrice(BigDecimal price) {
+    public void setPrice(double price) {
         this.price = price;
     }
 
