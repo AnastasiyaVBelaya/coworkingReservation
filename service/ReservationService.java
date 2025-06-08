@@ -11,7 +11,7 @@ import service.api.IReservationService;
 import service.api.IUserService;
 import service.api.IWorkspaceService;
 
-import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 public class ReservationService implements IReservationService {
@@ -61,7 +61,7 @@ public class ReservationService implements IReservationService {
     }
 
     @Override
-    public List<Reservation> findByUser(UserDTO userDTO) {
+    public Set<Reservation> findByUser(UserDTO userDTO) {
         if (userDTO == null || isBlank(userDTO.getLogin())) {
             throw new IllegalArgumentException("UserDTO or login cannot be null or empty");
         }
@@ -70,7 +70,7 @@ public class ReservationService implements IReservationService {
     }
 
     @Override
-    public List<Reservation> findAll() {
+    public Set<Reservation> findAll() {
         return reservationRepository.findAll();
     }
 

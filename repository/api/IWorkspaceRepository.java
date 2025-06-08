@@ -2,8 +2,8 @@ package repository.api;
 
 import repository.entity.Workspace;
 
-import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 public interface IWorkspaceRepository {
@@ -11,9 +11,9 @@ public interface IWorkspaceRepository {
 
     Optional<Workspace> find(UUID id);
 
-    List<Workspace> findAll();
+    Set<Workspace> findAll();
 
-    List<Workspace> findAvailable();
+    Set<Workspace> findAvailable();
 
     Workspace update(Workspace workspace);
 

@@ -11,8 +11,8 @@ import service.api.IWorkspaceService;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.List;
 import java.util.Scanner;
+import java.util.Set;
 import java.util.UUID;
 
 public class MenuController {
@@ -117,7 +117,7 @@ public class MenuController {
     }
 
     private void viewAllWorkspaces() {
-        List<Workspace> workspaces = workspaceService.findAll();
+        Set<Workspace> workspaces = workspaceService.findAll();
         if (workspaces.isEmpty()) {
             System.out.println("No workspaces available.");
             System.out.println();
@@ -180,7 +180,7 @@ public class MenuController {
     }
 
     private void viewReservations() {
-        List<Reservation> reservations = reservationService.findAll();
+        Set<Reservation> reservations = reservationService.findAll();
         if (reservations.isEmpty()) {
             System.out.println("No reservations found.");
             System.out.println();
@@ -191,7 +191,7 @@ public class MenuController {
     }
 
     private void browseSpaces() {
-        List<Workspace> available = workspaceService.findAvailable();
+        Set<Workspace> available = workspaceService.findAvailable();
         if (available.isEmpty()) {
             System.out.println("No available workspaces.");
             System.out.println();
@@ -228,7 +228,7 @@ public class MenuController {
     }
 
     private void viewMyReservations() {
-        List<Reservation> myReservations = reservationService.findByUser(currentUser);
+        Set<Reservation> myReservations = reservationService.findByUser(currentUser);
         if (myReservations.isEmpty()) {
             System.out.println("You have no reservations.");
             System.out.println();

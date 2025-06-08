@@ -6,7 +6,9 @@ import repository.entity.Workspace;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class FileWorkspaceRepository extends AbstractFileRepository<Workspace> implements IWorkspaceRepository {
 
@@ -36,13 +38,13 @@ public class FileWorkspaceRepository extends AbstractFileRepository<Workspace> i
     }
 
     @Override
-    public List<Workspace> findAll() {
-        return List.copyOf(items);
+    public Set<Workspace> findAll() {
+        return Set.copyOf(items);
     }
 
     @Override
-    public List<Workspace> findAvailable() {
-        return items.stream().filter(Workspace::isAvailable).toList();
+    public Set<Workspace> findAvailable() {
+        return items.stream().filter(Workspace::isAvailable).collect(Collectors.toSet());
     }
 
     @Override

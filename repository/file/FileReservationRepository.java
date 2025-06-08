@@ -4,8 +4,9 @@ import exception.ReservationNotFoundException;
 import repository.api.IReservationRepository;
 import repository.entity.Reservation;
 
-import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class FileReservationRepository extends AbstractFileRepository<Reservation> implements IReservationRepository {
 
@@ -35,19 +36,19 @@ public class FileReservationRepository extends AbstractFileRepository<Reservatio
     }
 
     @Override
-    public List<Reservation> findByUser(String login) {
+    public Set<Reservation> findByUser(String login) {
         if (login == null || login.isEmpty()) {
             throw new IllegalArgumentException("User login cannot be null or empty!");
         }
         return items.stream()
                 .filter(reservation -> reservation.getUser() != null
                         && login.equals(reservation.getUser().getLogin()))
-                .toList();
+                .collect(Collectors.toSet());
     }
 
     @Override
-    public List<Reservation> findAll() {
-        return List.copyOf(items);
+    public Set<Reservation> findAll() {
+        return Set.copyOf(items);
     }
 
     @Override

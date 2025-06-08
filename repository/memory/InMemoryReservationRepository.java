@@ -4,12 +4,11 @@ import exception.ReservationNotFoundException;
 import repository.api.IReservationRepository;
 import repository.entity.Reservation;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class InMemoryReservationRepository implements IReservationRepository {
-    private final List<Reservation> reservations = new ArrayList<>();
+    private final Set<Reservation> reservations = new HashSet<>();
 
     @Override
     public Reservation add(Reservation reservation) {
@@ -32,19 +31,19 @@ public class InMemoryReservationRepository implements IReservationRepository {
     }
 
     @Override
-    public List<Reservation> findByUser(String login) {
+    public Set<Reservation> findByUser(String login) {
         if (login == null || login.isEmpty()) {
             throw new IllegalArgumentException("User login cannot be null or empty!");
         }
         return reservations.stream()
                 .filter(reservation -> reservation.getUser() != null
                         && login.equals(reservation.getUser().getLogin()))
-                .toList();
+                .collect(Collectors.toSet());
     }
 
     @Override
-    public List<Reservation> findAll() {
-        return List.copyOf(reservations);
+    public Set<Reservation> findAll() {
+        return Set.copyOf(reservations);
     }
 
     @Override
