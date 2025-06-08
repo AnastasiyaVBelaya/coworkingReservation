@@ -4,16 +4,22 @@ import exception.WorkspaceNotFoundException;
 import repository.api.IWorkspaceRepository;
 import repository.entity.Workspace;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class FileWorkspaceRepository extends AbstractFileRepository<Workspace> implements IWorkspaceRepository {
 
+    private final Map<UUID, Workspace> idIndex;
+
     public FileWorkspaceRepository() {
         super("data/workspaces.ser");
+        this.idIndex = new HashMap<>();
+        for (Workspace ws : items) {
+            idIndex.put(ws.getId(), ws);
+        }
     }
 
     @Override
@@ -22,19 +28,17 @@ public class FileWorkspaceRepository extends AbstractFileRepository<Workspace> i
             throw new IllegalArgumentException("Workspace cannot be null!");
         }
         items.add(workspace);
+        idIndex.put(workspace.getId(), workspace);
         writeToFile();
         return workspace;
     }
 
     @Override
-    public Optional<Workspace> find(UUID id) {
+    public java.util.Optional<Workspace> find(UUID id) {
         if (id == null) {
             throw new IllegalArgumentException("Workspace ID cannot be null!");
         }
-        return items
-                .stream()
-                .filter(workspace -> workspace.getId().equals(id))
-                .findFirst();
+        return java.util.Optional.ofNullable(idIndex.get(id));
     }
 
     @Override
@@ -44,7 +48,9 @@ public class FileWorkspaceRepository extends AbstractFileRepository<Workspace> i
 
     @Override
     public Set<Workspace> findAvailable() {
-        return items.stream().filter(Workspace::isAvailable).collect(Collectors.toSet());
+        return items.stream()
+                .filter(Workspace::isAvailable)
+                .collect(Collectors.toSet());
     }
 
     @Override
@@ -52,17 +58,16 @@ public class FileWorkspaceRepository extends AbstractFileRepository<Workspace> i
         if (workspace == null) {
             throw new IllegalArgumentException("Workspace cannot be null!");
         }
-        Optional<Workspace> existingWorkspace = find(workspace.getId());
-
-        if (existingWorkspace.isPresent()) {
-            Workspace updatedWorkspace = existingWorkspace.get();
-            updatedWorkspace.setType(workspace.getType());
-            updatedWorkspace.setPrice(workspace.getPrice());
-            updatedWorkspace.setAvailability(workspace.isAvailable());
-            writeToFile();
-            return updatedWorkspace;
+        Workspace existingWorkspace = idIndex.get(workspace.getId());
+        if (existingWorkspace == null) {
+            throw new WorkspaceNotFoundException(workspace.getId());
         }
-        throw new WorkspaceNotFoundException(workspace.getId());
+
+        existingWorkspace.setType(workspace.getType());
+        existingWorkspace.setPrice(workspace.getPrice());
+        existingWorkspace.setAvailability(workspace.isAvailable());
+        writeToFile();
+        return existingWorkspace;
     }
 
     @Override
@@ -70,15 +75,16 @@ public class FileWorkspaceRepository extends AbstractFileRepository<Workspace> i
         if (id == null) {
             throw new IllegalArgumentException("Workspace ID cannot be null!");
         }
-
-        Optional<Workspace> workspace = find(id);
-        if (workspace.isPresent()) {
-            boolean removed = items.remove(workspace.get());
-            if (removed) {
-                writeToFile();
-            }
-            return removed;
+        Workspace workspace = idIndex.remove(id);
+        if (workspace == null) {
+            return false;
         }
-        return false;
+        boolean removed = items.remove(workspace);
+        if (removed) {
+            writeToFile();
+        } else {
+            idIndex.put(id, workspace);
+        }
+        return removed;
     }
 }
