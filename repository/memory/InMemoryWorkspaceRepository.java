@@ -4,10 +4,8 @@ import exception.WorkspaceNotFoundException;
 import repository.entity.Workspace;
 import repository.api.IWorkspaceRepository;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class InMemoryWorkspaceRepository implements IWorkspaceRepository {
     private final List<Workspace> workspaces = new ArrayList<>();
@@ -32,13 +30,13 @@ public class InMemoryWorkspaceRepository implements IWorkspaceRepository {
     }
 
     @Override
-    public List<Workspace> findAll() {
-        return List.copyOf(workspaces);
+    public Set<Workspace> findAll() {
+        return Set.copyOf(workspaces);
     }
 
     @Override
-    public List<Workspace> findAvailable() {
-        return workspaces.stream().filter(Workspace::isAvailable).toList();
+    public Set<Workspace> findAvailable() {
+        return workspaces.stream().filter(Workspace::isAvailable).collect(Collectors.toSet());
     }
 
     @Override

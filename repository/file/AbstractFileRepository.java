@@ -2,11 +2,13 @@ package repository.file;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public abstract class AbstractFileRepository<T> {
     protected final File file;
-    protected final List<T> items;
+    protected final Set<T> items;
 
     private static final String READ_WARNING =
             "Warning! Unable to read data from file '%s'. " +
@@ -27,15 +29,15 @@ public abstract class AbstractFileRepository<T> {
         this.items = readFromFile();
     }
 
-    protected List<T> readFromFile() {
+    protected Set<T> readFromFile() {
         if (!file.exists()) {
-            return new ArrayList<>();
+            return new HashSet<>();
         }
         try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(file))) {
-            return (List<T>) inputStream.readObject();
+            return (Set<T>) inputStream.readObject();
         } catch (Exception e) {
             System.out.printf((READ_WARNING) + "%n", file.getName());
-            return new ArrayList<>();
+            return new HashSet<>();
         }
     }
 
