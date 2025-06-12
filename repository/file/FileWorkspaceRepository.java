@@ -4,10 +4,7 @@ import exception.WorkspaceNotFoundException;
 import repository.api.IWorkspaceRepository;
 import repository.entity.Workspace;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class FileWorkspaceRepository extends AbstractFileRepository<Workspace> implements IWorkspaceRepository {
@@ -16,10 +13,8 @@ public class FileWorkspaceRepository extends AbstractFileRepository<Workspace> i
 
     public FileWorkspaceRepository() {
         super("data/workspaces.ser");
-        this.idIndex = new HashMap<>();
-        for (Workspace ws : items) {
-            idIndex.put(ws.getId(), ws);
-        }
+        this.idIndex = items.stream()
+                .collect(Collectors.toMap(Workspace::getId, ws -> ws));
     }
 
     @Override
@@ -34,7 +29,7 @@ public class FileWorkspaceRepository extends AbstractFileRepository<Workspace> i
     }
 
     @Override
-    public java.util.Optional<Workspace> find(UUID id) {
+    public Optional<Workspace> find(UUID id) {
         if (id == null) {
             throw new IllegalArgumentException("Workspace ID cannot be null!");
         }
@@ -58,10 +53,8 @@ public class FileWorkspaceRepository extends AbstractFileRepository<Workspace> i
         if (workspace == null) {
             throw new IllegalArgumentException("Workspace cannot be null!");
         }
-        Workspace existingWorkspace = idIndex.get(workspace.getId());
-        if (existingWorkspace == null) {
-            throw new WorkspaceNotFoundException(workspace.getId());
-        }
+        Workspace existingWorkspace = Optional.ofNullable(idIndex.get(workspace.getId()))
+                .orElseThrow(() -> new WorkspaceNotFoundException(workspace.getId()));
 
         existingWorkspace.setType(workspace.getType());
         existingWorkspace.setPrice(workspace.getPrice());
@@ -75,16 +68,16 @@ public class FileWorkspaceRepository extends AbstractFileRepository<Workspace> i
         if (id == null) {
             throw new IllegalArgumentException("Workspace ID cannot be null!");
         }
-        Workspace workspace = idIndex.remove(id);
-        if (workspace == null) {
-            return false;
-        }
-        boolean removed = items.remove(workspace);
-        if (removed) {
-            writeToFile();
-        } else {
-            idIndex.put(id, workspace);
-        }
-        return removed;
+        return Optional.ofNullable(idIndex.remove(id))
+                .map(workspace -> {
+                    boolean removed = items.remove(workspace);
+                    if (removed) {
+                        writeToFile();
+                    } else {
+                        idIndex.put(id, workspace);
+                    }
+                    return removed;
+                })
+                .orElse(false);
     }
 }

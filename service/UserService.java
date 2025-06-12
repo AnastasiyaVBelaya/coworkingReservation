@@ -7,8 +7,6 @@ import repository.entity.User;
 import service.api.IUserService;
 import service.api.IUserValidator;
 
-import java.util.Optional;
-
 public class UserService implements IUserService {
     private final IUserRepository userRepository;
     private final IUserValidator userValidator;
@@ -20,20 +18,19 @@ public class UserService implements IUserService {
 
     @Override
     public User login(UserDTO userDTO) {
-        String login = userDTO.getLogin();
+        if (userDTO == null) {
+            throw new IllegalArgumentException("UserDTO cannot be null");
+        }
+        final String login = userDTO.getLogin().trim();
         userValidator.validateLogin(login);
 
-        login = login.trim();
-
-        Optional<User> optionalUser = userRepository.find(login);
-        if (optionalUser.isPresent()) {
-            return optionalUser.get();
-        }
-
-        Role role = isAdmin(login) ? Role.ADMIN : Role.CUSTOMER;
-        User user = new User(role, login);
-        userRepository.add(user);
-        return user;
+        return userRepository.find(login)
+                .orElseGet(() -> {
+                    Role role = isAdmin(login) ? Role.ADMIN : Role.CUSTOMER;
+                    User user = new User(role, login);
+                    userRepository.add(user);
+                    return user;
+                });
     }
 
     private boolean isAdmin(String login) {
