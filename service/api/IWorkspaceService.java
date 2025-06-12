@@ -3,7 +3,7 @@ package service.api;
 import model.WorkspaceDTO;
 import repository.entity.Workspace;
 
-import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 public interface IWorkspaceService {
@@ -11,9 +11,9 @@ public interface IWorkspaceService {
 
     Workspace find(UUID id);
 
-    List<Workspace> findAll();
+    Set<Workspace> findAll();
 
-    List<Workspace> findAvailable();
+    Set<Workspace> findAvailable();
 
     Workspace update(UUID id, WorkspaceDTO workspaceDTO);
 

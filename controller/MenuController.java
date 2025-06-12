@@ -9,10 +9,11 @@ import service.api.IUserService;
 import service.api.IWorkspaceService;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.List;
 import java.util.Scanner;
+import java.util.Set;
 import java.util.UUID;
 
 public class MenuController {
@@ -21,6 +22,7 @@ public class MenuController {
     private final IWorkspaceService workspaceService;
     private final IReservationService reservationService;
     private UserDTO currentUser;
+    private static final DecimalFormat PRICE_FORMAT = new DecimalFormat("#0.00");
 
     public MenuController(Scanner scanner,
                           IUserService userService,
@@ -117,13 +119,15 @@ public class MenuController {
     }
 
     private void viewAllWorkspaces() {
-        List<Workspace> workspaces = workspaceService.findAll();
+        Set<Workspace> workspaces = workspaceService.findAll();
         if (workspaces.isEmpty()) {
             System.out.println("No workspaces available.");
             System.out.println();
         } else {
             System.out.println("All workspaces:");
-            workspaces.forEach(System.out::println);
+            workspaces.stream()
+                    .map(this::formatWorkspace)
+                    .forEach(System.out::println);
             System.out.println();
         }
     }
@@ -180,7 +184,7 @@ public class MenuController {
     }
 
     private void viewReservations() {
-        List<Reservation> reservations = reservationService.findAll();
+        Set<Reservation> reservations = reservationService.findAll();
         if (reservations.isEmpty()) {
             System.out.println("No reservations found.");
             System.out.println();
@@ -191,13 +195,15 @@ public class MenuController {
     }
 
     private void browseSpaces() {
-        List<Workspace> available = workspaceService.findAvailable();
+        Set<Workspace> available = workspaceService.findAvailable();
         if (available.isEmpty()) {
             System.out.println("No available workspaces.");
             System.out.println();
         } else {
             System.out.println("Available workspaces:");
-            available.forEach(System.out::println);
+            available.stream()
+                    .map(this::formatWorkspace)
+                    .forEach(System.out::println);
             System.out.println();
         }
     }
@@ -228,7 +234,7 @@ public class MenuController {
     }
 
     private void viewMyReservations() {
-        List<Reservation> myReservations = reservationService.findByUser(currentUser);
+        Set<Reservation> myReservations = reservationService.findByUser(currentUser);
         if (myReservations.isEmpty()) {
             System.out.println("You have no reservations.");
             System.out.println();
@@ -287,5 +293,17 @@ public class MenuController {
                 System.out.println("Invalid price format!");
             }
         }
+    }
+
+    private String formatPrice(BigDecimal price) {
+        return PRICE_FORMAT.format(price);
+    }
+
+    private String formatWorkspace(Workspace workspace) {
+        return String.format("Workspace{id=%s, type=%s, price=%s, available=%s}",
+                workspace.getId(),
+                workspace.getType(),
+                formatPrice(workspace.getPrice()),
+                workspace.isAvailable());
     }
 }

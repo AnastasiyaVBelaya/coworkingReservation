@@ -11,7 +11,8 @@ import service.api.IReservationService;
 import service.api.IUserService;
 import service.api.IWorkspaceService;
 
-import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 public class ReservationService implements IReservationService {
@@ -61,7 +62,7 @@ public class ReservationService implements IReservationService {
     }
 
     @Override
-    public List<Reservation> findByUser(UserDTO userDTO) {
+    public Set<Reservation> findByUser(UserDTO userDTO) {
         if (userDTO == null || isBlank(userDTO.getLogin())) {
             throw new IllegalArgumentException("UserDTO or login cannot be null or empty");
         }
@@ -70,7 +71,7 @@ public class ReservationService implements IReservationService {
     }
 
     @Override
-    public List<Reservation> findAll() {
+    public Set<Reservation> findAll() {
         return reservationRepository.findAll();
     }
 
@@ -79,19 +80,18 @@ public class ReservationService implements IReservationService {
         if (id == null) {
             throw new IllegalArgumentException("ID cannot be null");
         }
-        Reservation reservation = reservationRepository.findById(id);
-        if (reservation == null) {
-            throw new IllegalArgumentException("Reservation not found for ID: " + id);
-        }
-        boolean removed = reservationRepository.remove(id);
-        if (removed) {
-            Workspace workspace = reservation.getWorkspace();
-            workspace.setAvailability(true);
-            workspaceService.update(workspace.getId(),
-                    new WorkspaceDTO(workspace.getType(), workspace.getPrice(), workspace.isAvailable()));
-        }
-
-        return removed;
+        return Optional.ofNullable(reservationRepository.findById(id))
+                .map(reservation -> {
+                    boolean removed = reservationRepository.remove(id);
+                    if (removed) {
+                        Workspace workspace = reservation.getWorkspace();
+                        workspace.setAvailability(true);
+                        workspaceService.update(workspace.getId(),
+                                new WorkspaceDTO(workspace.getType(), workspace.getPrice(), workspace.isAvailable()));
+                    }
+                    return removed;
+                })
+                .orElseThrow(() -> new IllegalArgumentException("Reservation not found for ID: " + id));
     }
 
     private boolean isBlank(String str) {

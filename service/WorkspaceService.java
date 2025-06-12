@@ -6,7 +6,7 @@ import repository.api.IWorkspaceRepository;
 import repository.entity.Workspace;
 import service.api.IWorkspaceService;
 
-import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 public class WorkspaceService implements IWorkspaceService {
@@ -35,12 +35,12 @@ public class WorkspaceService implements IWorkspaceService {
     }
 
     @Override
-    public List<Workspace> findAll() {
+    public Set<Workspace> findAll() {
         return workspaceRepository.findAll();
     }
 
     @Override
-    public List<Workspace> findAvailable() {
+    public Set<Workspace> findAvailable() {
         return workspaceRepository.findAvailable();
     }
 

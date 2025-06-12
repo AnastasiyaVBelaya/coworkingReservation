@@ -50,6 +50,20 @@ public class Workspace implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("Workspace{id=%s, type=%s, price=%.2f, available=%b}", id, type, price, available);
+        return String.format("Workspace{id=%s, type=%s, price=%s, available=%b}",
+                id, type, price, available);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Workspace that = (Workspace) o;
+        return id.equals(that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return id.hashCode();
     }
 }

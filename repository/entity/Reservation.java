@@ -52,4 +52,17 @@ public class Reservation implements Serializable {
         return String.format("Reservation{id=%s, user=%s, workspace=%s, date=%s, time=%s-%s}",
                 id, user.getLogin(), workspace.getId(), date, startTime, endTime);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Reservation that = (Reservation) o;
+        return id.equals(that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
 }
