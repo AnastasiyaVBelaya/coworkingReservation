@@ -11,6 +11,7 @@ import service.api.IReservationService;
 import service.api.IUserService;
 import service.api.IWorkspaceService;
 
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -79,19 +80,18 @@ public class ReservationService implements IReservationService {
         if (id == null) {
             throw new IllegalArgumentException("ID cannot be null");
         }
-        Reservation reservation = reservationRepository.findById(id);
-        if (reservation == null) {
-            throw new IllegalArgumentException("Reservation not found for ID: " + id);
-        }
-        boolean removed = reservationRepository.remove(id);
-        if (removed) {
-            Workspace workspace = reservation.getWorkspace();
-            workspace.setAvailability(true);
-            workspaceService.update(workspace.getId(),
-                    new WorkspaceDTO(workspace.getType(), workspace.getPrice(), workspace.isAvailable()));
-        }
-
-        return removed;
+        return Optional.ofNullable(reservationRepository.findById(id))
+                .map(reservation -> {
+                    boolean removed = reservationRepository.remove(id);
+                    if (removed) {
+                        Workspace workspace = reservation.getWorkspace();
+                        workspace.setAvailability(true);
+                        workspaceService.update(workspace.getId(),
+                                new WorkspaceDTO(workspace.getType(), workspace.getPrice(), workspace.isAvailable()));
+                    }
+                    return removed;
+                })
+                .orElseThrow(() -> new IllegalArgumentException("Reservation not found for ID: " + id));
     }
 
     private boolean isBlank(String str) {

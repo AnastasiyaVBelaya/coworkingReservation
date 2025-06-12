@@ -50,7 +50,8 @@ public class Workspace implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("Workspace{id=%s, type=%s, price=%.2f, available=%b}", id, type, price, available);
+        return String.format("Workspace{id=%s, type=%s, price=%s, available=%b}",
+                id, type, price, available);
     }
 
     @Override
