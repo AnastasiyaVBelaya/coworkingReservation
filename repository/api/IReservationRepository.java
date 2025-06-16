@@ -1,9 +1,8 @@
 package repository.api;
 
 import repository.entity.Reservation;
-import repository.entity.User;
 
-import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 public interface IReservationRepository {
@@ -11,9 +10,9 @@ public interface IReservationRepository {
 
     Reservation findById(UUID id);
 
-    List<Reservation> findAll();
+    Set<Reservation> findAll();
 
-    List<Reservation> findByUser(String login);
+    Set<Reservation> findByUser(String login);
 
     boolean remove(UUID id);
 }

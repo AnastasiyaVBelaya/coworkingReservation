@@ -26,4 +26,17 @@ public class User implements Serializable {
     public String toString() {
         return String.format("User{login='%s', role=%s}", login, role);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return login.equalsIgnoreCase(user.login);
+    }
+
+    @Override
+    public int hashCode() {
+        return login.toLowerCase().hashCode();
+    }
 }
