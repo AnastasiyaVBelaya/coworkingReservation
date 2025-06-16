@@ -3,6 +3,7 @@ package repository.memory;
 import exception.ReservationNotFoundException;
 import repository.api.IReservationRepository;
 import repository.entity.Reservation;
+import repository.entity.User;
 
 import java.util.*;
 
@@ -18,12 +19,7 @@ public class InMemoryReservationRepository implements IReservationRepository {
         }
         reservations.add(reservation);
         idIndex.put(reservation.getId(), reservation);
-
-        String login = reservation.getUser() != null ? reservation.getUser().getLogin() : null;
-        if (login != null) {
-            userIndex.computeIfAbsent(login, k -> new HashSet<>()).add(reservation);
-        }
-
+        indexByUser(reservation);
         return reservation;
     }
 
@@ -44,7 +40,9 @@ public class InMemoryReservationRepository implements IReservationRepository {
         if (login == null || login.isEmpty()) {
             throw new IllegalArgumentException("User login cannot be null or empty!");
         }
-        return userIndex.getOrDefault(login, Collections.emptySet());
+        return Optional.ofNullable(userIndex.get(login.toLowerCase()))
+                .map(Set::copyOf)
+                .orElse(Collections.emptySet());
     }
 
     @Override
@@ -60,19 +58,35 @@ public class InMemoryReservationRepository implements IReservationRepository {
         }
         boolean removed = reservations.remove(reservation);
         if (removed) {
-            String login = reservation.getUser() != null ? reservation.getUser().getLogin() : null;
-            if (login != null) {
-                Set<Reservation> userReservations = userIndex.get(login);
-                if (userReservations != null) {
-                    userReservations.remove(reservation);
-                    if (userReservations.isEmpty()) {
-                        userIndex.remove(login);
-                    }
-                }
-            }
+            deindexByUser(reservation);
         } else {
             idIndex.put(id, reservation);
         }
         return removed;
+    }
+
+    private void indexByUser(Reservation reservation) {
+        getUserLoginLowerCase(reservation).ifPresent(login ->
+                userIndex.computeIfAbsent(login, k -> {
+                    return new HashSet<>();
+                }).add(reservation));
+    }
+
+    private void deindexByUser(Reservation reservation) {
+        getUserLoginLowerCase(reservation).ifPresent(login -> {
+            Set<Reservation> userReservations = userIndex.get(login);
+            if (userReservations != null) {
+                userReservations.remove(reservation);
+                if (userReservations.isEmpty()) {
+                    userIndex.remove(login);
+                }
+            }
+        });
+    }
+
+    private Optional<String> getUserLoginLowerCase(Reservation reservation) {
+        return Optional.ofNullable(reservation.getUser())
+                .map(User::getLogin)
+                .map(String::toLowerCase);
     }
 }

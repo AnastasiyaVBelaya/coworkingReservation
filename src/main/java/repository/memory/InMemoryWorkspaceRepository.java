@@ -46,11 +46,9 @@ public class InMemoryWorkspaceRepository implements IWorkspaceRepository {
         if (workspace == null) {
             throw new IllegalArgumentException("Workspace cannot be null!");
         }
-        Workspace existingWorkspace = idIndex.get(workspace.getId());
-        if (existingWorkspace == null) {
-            throw new WorkspaceNotFoundException(workspace.getId());
-        }
-        // Обновляем поля
+        Workspace existingWorkspace = Optional.ofNullable(idIndex.get(workspace.getId()))
+                .orElseThrow(() -> new WorkspaceNotFoundException(workspace.getId()));
+
         existingWorkspace.setType(workspace.getType());
         existingWorkspace.setPrice(workspace.getPrice());
         existingWorkspace.setAvailability(workspace.isAvailable());
@@ -62,14 +60,14 @@ public class InMemoryWorkspaceRepository implements IWorkspaceRepository {
         if (id == null) {
             throw new IllegalArgumentException("Workspace ID cannot be null!");
         }
-        Workspace workspace = idIndex.remove(id);
-        if (workspace == null) {
-            return false;
-        }
-        boolean removed = workspaces.remove(workspace);
-        if (!removed) {
-            idIndex.put(id, workspace);
-        }
-        return removed;
+        return Optional.ofNullable(idIndex.remove(id))
+                .map(workspace -> {
+                    boolean removed = workspaces.remove(workspace);
+                    if (!removed) {
+                        idIndex.put(id, workspace);
+                    }
+                    return removed;
+                })
+                .orElse(false);
     }
 }
