@@ -1,5 +1,6 @@
 package service;
 
+import exception.ReservationNotFoundException;
 import model.ReservationDTO;
 import model.UserDTO;
 import model.WorkspaceDTO;
@@ -91,7 +92,7 @@ public class ReservationService implements IReservationService {
                     }
                     return removed;
                 })
-                .orElseThrow(() -> new IllegalArgumentException("Reservation not found for ID: " + id));
+                .orElseThrow(() -> new ReservationNotFoundException(id));
     }
 
     private boolean isBlank(String str) {
