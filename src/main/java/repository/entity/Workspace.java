@@ -20,6 +20,13 @@ public class Workspace implements Serializable {
         this.available = available;
     }
 
+    public Workspace(UUID id, WorkspaceType type, BigDecimal price, boolean available) {
+        this.id = id;
+        this.type = type;
+        this.price = price;
+        this.available = available;
+    }
+
     public UUID getId() {
         return id;
     }

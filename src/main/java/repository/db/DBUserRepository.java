@@ -47,7 +47,8 @@ public class DBUserRepository implements IUserRepository {
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
-                User user = new User(Role.valueOf(rs.getString("role")), rs.getString("login"));
+                User user = new User(Role.valueOf(rs.getString("role")),
+                        rs.getString("login"));
                 return Optional.of(user);
             }
 

@@ -1,5 +1,6 @@
 package repository.db;
 
+import exception.WorkspaceNotFoundException;
 import model.WorkspaceType;
 import repository.api.IWorkspaceRepository;
 import repository.entity.Workspace;
@@ -87,7 +88,7 @@ public class DBWorkspaceRepository implements IWorkspaceRepository {
 
             int rowsUpdated = stmt.executeUpdate();
             if (rowsUpdated == 0) {
-                throw new NoSuchElementException("Workspace with ID " + workspace.getId() + " not found");
+                throw new WorkspaceNotFoundException(workspace.getId());
             }
 
         } catch (SQLException e) {

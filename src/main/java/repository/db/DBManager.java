@@ -34,7 +34,8 @@ public final class DBManager {
 
     private Properties loadProperties() throws IOException {
         Properties props = new Properties();
-        try (InputStream input = getClass().getClassLoader().getResourceAsStream("config.properties")) {
+        try (InputStream input = getClass().getClassLoader()
+                .getResourceAsStream("config.properties")) {
             if (input == null) {
                 throw new IOException("Unable to find config.properties");
             }

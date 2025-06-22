@@ -1,5 +1,7 @@
 package repository.db;
 
+import exception.UserNotFoundException;
+import exception.WorkspaceNotFoundException;
 import repository.api.IReservationRepository;
 import repository.entity.Reservation;
 import repository.entity.User;
@@ -143,9 +145,9 @@ public class DBReservationRepository implements IReservationRepository {
         LocalTime endTime = rs.getTime("end_time").toLocalTime();
 
         User user = userRepository.find(userLogin)
-                .orElseThrow(() -> new RuntimeException("User not found for login: " + userLogin));
+                .orElseThrow(() -> new UserNotFoundException(userLogin));
         Workspace workspace = workspaceRepository.find(workspaceId)
-                .orElseThrow(() -> new RuntimeException("Workspace not found for id: " + workspaceId));
+                .orElseThrow(() -> new WorkspaceNotFoundException(workspaceId));
 
         return new Reservation(user, workspace, date, startTime, endTime);
     }
