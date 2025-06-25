@@ -8,6 +8,12 @@ import java.util.Scanner;
 
 public class ApplicationStart {
     public static void main(String[] args) {
+
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            System.out.println("Shutting down application, closing DB connections...");
+            repository.db.DBManager.getInstance().close();
+        }));
+
         Scanner scanner = new Scanner(System.in);
         ServiceFactory serviceFactory = ServiceFactory.getInstance();
         IUserService userService = serviceFactory.getUserService();

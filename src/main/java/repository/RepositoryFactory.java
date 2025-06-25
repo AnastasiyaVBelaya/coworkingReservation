@@ -3,10 +3,9 @@ package repository;
 import repository.api.IReservationRepository;
 import repository.api.IUserRepository;
 import repository.api.IWorkspaceRepository;
-import repository.file.FileReservationRepository;
-import repository.file.FileUserRepository;
-import repository.file.FileWorkspaceRepository;
-
+import repository.db.DBReservationRepository;
+import repository.db.DBUserRepository;
+import repository.db.DBWorkspaceRepository;
 
 public class RepositoryFactory {
     private static final RepositoryFactory INSTANCE = new RepositoryFactory();
@@ -16,9 +15,9 @@ public class RepositoryFactory {
     private final IWorkspaceRepository workspaceRepository;
 
     private RepositoryFactory() {
-        this.userRepository = new FileUserRepository();
-        this.reservationRepository = new FileReservationRepository();
-        this.workspaceRepository = new FileWorkspaceRepository();
+        this.userRepository = new DBUserRepository();
+        this.reservationRepository = new DBReservationRepository();
+        this.workspaceRepository = new DBWorkspaceRepository();
     }
 
     public static RepositoryFactory getInstance() {
