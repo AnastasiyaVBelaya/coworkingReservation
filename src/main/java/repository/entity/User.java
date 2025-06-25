@@ -1,13 +1,27 @@
 package repository.entity;
 
+import jakarta.persistence.*;
 import model.Role;
 
 import java.io.Serializable;
+import java.util.Objects;
 
+@Entity
+@Table(name = "users")
 public class User implements Serializable {
+
     private static final long serialVersionUID = 1L;
-    private final String login;
-    private final Role role;
+
+    @Id
+    @Column(name = "login", nullable = false, unique = true, length = 50)
+    private String login;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role", nullable = false, length = 20)
+    private Role role;
+
+    protected User() {
+    }
 
     public User(Role role, String login) {
         this.role = role;
@@ -22,21 +36,25 @@ public class User implements Serializable {
         return role;
     }
 
-    @Override
-    public String toString() {
-        return String.format("User{login='%s', role=%s}", login, role);
+    public void setRole(Role role) {
+        this.role = role;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof User)) return false;
         User user = (User) o;
-        return login.equalsIgnoreCase(user.login);
+        return login.equals(user.login);
     }
 
     @Override
     public int hashCode() {
-        return login.toLowerCase().hashCode();
+        return Objects.hash(login);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("User{login='%s', role=%s}", login, role);
     }
 }
