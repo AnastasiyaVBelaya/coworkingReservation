@@ -1,17 +1,35 @@
 package repository.entity;
 
+import jakarta.persistence.*;
 import model.WorkspaceType;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Objects;
 import java.util.UUID;
 
+@Entity
+@Table(name = "workspaces")
 public class Workspace implements Serializable {
+
     private static final long serialVersionUID = 1L;
-    private final UUID id;
+
+    @Id
+    @Column(name = "id", nullable = false)
+    private UUID id;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "type", nullable = false, length = 30)
     private WorkspaceType type;
+
+    @Column(name = "price", nullable = false)
     private BigDecimal price;
+
+    @Column(name = "available", nullable = false)
     private boolean available;
+
+    protected Workspace() {
+    }
 
     public Workspace(WorkspaceType type, BigDecimal price, boolean available) {
         this.id = UUID.randomUUID();
@@ -51,26 +69,25 @@ public class Workspace implements Serializable {
         return available;
     }
 
-    public void setAvailability(boolean available) {
+    public void setAvailable(boolean available) {
         this.available = available;
-    }
-
-    @Override
-    public String toString() {
-        return String.format("Workspace{id=%s, type=%s, price=%s, available=%b}",
-                id, type, price, available);
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof Workspace)) return false;
         Workspace that = (Workspace) o;
-        return id.equals(that.id);
+        return Objects.equals(id, that.id);
     }
 
     @Override
     public int hashCode() {
-        return id.hashCode();
+        return Objects.hash(id);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Workspace{id=%s, type=%s, price=%s, available=%b}", id, type, price, available);
     }
 }

@@ -53,7 +53,7 @@ public class WorkspaceService implements IWorkspaceService {
         Workspace existingWorkspace = find(id);
         existingWorkspace.setType(workspaceDTO.getType());
         existingWorkspace.setPrice(workspaceDTO.getPrice());
-        existingWorkspace.setAvailability(workspaceDTO.isAvailable());
+        existingWorkspace.setAvailable(workspaceDTO.isAvailable());
 
         return workspaceRepository.update(existingWorkspace);
     }

@@ -12,6 +12,7 @@ idea/libraries/
 *. iml
 *. ipr
 config.properties
+src/main/resources/META-INF/persistence.xml
 
 ### Eclipse ###
 .apt_generated
