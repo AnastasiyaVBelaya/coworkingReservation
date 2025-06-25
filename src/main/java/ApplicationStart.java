@@ -3,6 +3,7 @@ import service.ServiceFactory;
 import service.api.IUserService;
 import service.api.IWorkspaceService;
 import service.api.IReservationService;
+import config.HibernateUtil;
 
 import java.util.Scanner;
 
@@ -10,8 +11,8 @@ public class ApplicationStart {
     public static void main(String[] args) {
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            System.out.println("Shutting down application, closing DB connections...");
-            repository.db.DBManager.getInstance().close();
+            System.out.println("Shutting down application, closing Hibernate EntityManagerFactory...");
+            HibernateUtil.close();
         }));
 
         Scanner scanner = new Scanner(System.in);

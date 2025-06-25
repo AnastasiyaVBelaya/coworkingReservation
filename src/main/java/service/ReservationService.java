@@ -56,7 +56,7 @@ public class ReservationService implements IReservationService {
                 reservationDTO.getEndTime()
         );
         Reservation savedReservation = reservationRepository.add(reservation);
-        workspace.setAvailability(false);
+        workspace.setAvailable(false);
         workspaceService.update(workspace.getId(),
                 new WorkspaceDTO(workspace.getType(), workspace.getPrice(), workspace.isAvailable()));
         return savedReservation;
@@ -86,7 +86,7 @@ public class ReservationService implements IReservationService {
                     boolean removed = reservationRepository.remove(id);
                     if (removed) {
                         Workspace workspace = reservation.getWorkspace();
-                        workspace.setAvailability(true);
+                        workspace.setAvailable(true);
                         workspaceService.update(workspace.getId(),
                                 new WorkspaceDTO(workspace.getType(), workspace.getPrice(), workspace.isAvailable()));
                     }

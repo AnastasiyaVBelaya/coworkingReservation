@@ -3,9 +3,9 @@ package repository;
 import repository.api.IReservationRepository;
 import repository.api.IUserRepository;
 import repository.api.IWorkspaceRepository;
-import repository.db.DBReservationRepository;
-import repository.db.DBUserRepository;
-import repository.db.DBWorkspaceRepository;
+import repository.hibernate.HibernateReservationRepository;
+import repository.hibernate.HibernateUserRepository;
+import repository.hibernate.HibernateWorkspaceRepository;
 
 public class RepositoryFactory {
     private static final RepositoryFactory INSTANCE = new RepositoryFactory();
@@ -15,9 +15,9 @@ public class RepositoryFactory {
     private final IWorkspaceRepository workspaceRepository;
 
     private RepositoryFactory() {
-        this.userRepository = new DBUserRepository();
-        this.reservationRepository = new DBReservationRepository();
-        this.workspaceRepository = new DBWorkspaceRepository();
+        this.userRepository = new HibernateUserRepository();
+        this.reservationRepository = new HibernateReservationRepository();
+        this.workspaceRepository = new HibernateWorkspaceRepository();
     }
 
     public static RepositoryFactory getInstance() {
